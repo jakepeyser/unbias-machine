@@ -1,1 +1,2 @@
-export * from './constants'
+export * from './constants';
+export { default as storage } from './storage';

@@ -3,6 +3,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const webpack = require('webpack');
+const merge = require('webpack-merge');
 
 // Init common paths used for configuration
 const PATHS = {
@@ -13,18 +14,12 @@ const PATHS = {
   options: path.join(__dirname, '/src/options/'),
   popup: path.join(__dirname, '/src/popup/'),
   source: path.join(__dirname, '/src'),
-  utils: path.join(__dirname, '/utils')
+  utils: path.join(__dirname, '/src/utils')
 };
 
 // Standard build options for all environments
-module.exports = {
+const common = {
   bail: true,
-  devtool: 'cheap-module-source-map',
-  entry: {
-    background_page: PATHS.background_page,
-    options: PATHS.options,
-    popup: PATHS.popup
-  },
   module: {
     rules: [
       {
@@ -33,38 +28,89 @@ module.exports = {
         use: {
           loader: 'babel-loader'
         }
+      },
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader']
       }
     ]
   },
-  mode: 'development',
   output: {
     path: PATHS.dist,
     filename: '[name].js'
   },
-  plugins: [
-    new CleanWebpackPlugin([PATHS.dist], { verbose: false }),
-    new CopyWebpackPlugin([
-      { from: 'manifest.json', to: PATHS.dist },
-      { from: PATHS.images, to: `${PATHS.dist}/images` }
-    ]),
-    new HtmlWebpackPlugin({
-      chunks: ['options'],
-      filename: 'options.html',
-      template: PATHS.index_html,
-      title: 'Unbias Machine Options'
-    }),
-    new HtmlWebpackPlugin({
-      chunks: ['popup'],
-      filename: 'popup.html',
-      template: PATHS.index_html,
-      title: 'Popup'
-    }),
-    new webpack.DefinePlugin(JSON.stringify('production'))
-  ],
   resolve: {
-    modules: [PATHS.source, 'node_modules'],
+    modules: ['node_modules'],
     alias: {
       utils: PATHS.utils
     }
   }
 };
+
+// Detect how npm is run and switch based on this
+let config;
+switch (process.env.npm_lifecycle_event) {
+  case 'build': {
+    config = merge(common, {
+      devtool: 'cheap-module-source-map',
+      entry: {
+        background_page: PATHS.background_page,
+        options: PATHS.options,
+        popup: PATHS.popup
+      },
+      mode: 'production',
+      plugins: [
+        new CleanWebpackPlugin([PATHS.dist], { verbose: false }),
+        new CopyWebpackPlugin([
+          { from: 'manifest.json', to: PATHS.dist },
+          { from: PATHS.images, to: `${PATHS.dist}/images` }
+        ]),
+        new HtmlWebpackPlugin({
+          chunks: ['options'],
+          filename: 'options.html',
+          template: PATHS.index_html,
+          title: 'Unbias Machine Options'
+        }),
+        new HtmlWebpackPlugin({
+          chunks: ['popup'],
+          filename: 'popup.html',
+          template: PATHS.index_html,
+          title: 'Popup'
+        }),
+        new webpack.DefinePlugin(JSON.stringify('production'))
+      ]
+    });
+    break;
+  }
+  case 'build:dev': {
+    config = merge(common, {
+      devServer: {
+        contentBase: PATHS.options,
+        host: 'localhost',
+        hot: true
+      },
+      entry: [
+        'react-hot-loader/patch',
+        'webpack-dev-server/client?http://localhost:8080',
+        'webpack/hot/dev-server',
+        PATHS.options
+      ],
+      mode: 'development',
+      plugins: [
+        new webpack.DefinePlugin(JSON.stringify('development')),
+        new HtmlWebpackPlugin({
+          filename: 'index.html',
+          template: PATHS.index_html,
+          title: 'Unbias Machine Options'
+        }),
+        new webpack.HotModuleReplacementPlugin(),
+        new webpack.NoEmitOnErrorsPlugin()
+      ]
+    });
+    break;
+  }
+  default:
+    throw Error('No Webpack config specified');
+}
+
+module.exports = config;

@@ -1,4 +1,5 @@
 {
+  "cSpell.userWords": ["antd", "lscache"],
   "[javascript]": {
     "editor.formatOnSave": true
   },
