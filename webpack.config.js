@@ -1,4 +1,5 @@
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const commandLineArgs = require('command-line-args');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
@@ -16,6 +17,19 @@ const PATHS = {
   source: path.join(__dirname, '/src'),
   utils: path.join(__dirname, '/src/utils')
 };
+
+// Make sure email type was specified
+let devSource;
+if (process.argv.some(v => v.includes('webpack-dev-server'))) {
+  const args = commandLineArgs([{ name: 'type', alias: 't', type: String }]);
+  if (args.type === 'options') {
+    devSource = PATHS.options;
+  } else if (args.type === 'popup') {
+    devSource = PATHS.popup;
+  } else {
+    throw Error('Missing or invalid email type');
+  }
+}
 
 // Standard build options for all environments
 const common = {
@@ -82,10 +96,11 @@ switch (process.env.npm_lifecycle_event) {
     });
     break;
   }
-  case 'build:dev': {
+  case 'build:dev-options':
+  case 'build:dev-popup': {
     config = merge(common, {
       devServer: {
-        contentBase: PATHS.options,
+        contentBase: devSource,
         host: 'localhost',
         hot: true
       },
@@ -93,7 +108,7 @@ switch (process.env.npm_lifecycle_event) {
         'react-hot-loader/patch',
         'webpack-dev-server/client?http://localhost:8080',
         'webpack/hot/dev-server',
-        PATHS.options
+        devSource
       ],
       mode: 'development',
       plugins: [

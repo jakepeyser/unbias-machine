@@ -1,4 +1,3 @@
-/* global chrome */
 import { Switch } from 'antd';
 import React, { Component, Fragment } from 'react';
 import ReactDOM from 'react-dom';

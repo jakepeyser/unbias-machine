@@ -2,7 +2,7 @@
   "name": "Unbias Machine",
   "version": "1.0",
   "description": "Remove names and pictures from candidate sourcing websites",
-  "permissions": ["activeTab", "declarativeContent", "storage"],
+  "permissions": ["declarativeContent", "storage", "tabs"],
   "page_action": {
     "default_popup": "popup.html",
     "default_icon": {

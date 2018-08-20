@@ -47,4 +47,7 @@ export const Option = styled.div`
     font-size: 14px;
     margin-left: 10px;
   }
+  + div {
+    margin-top: 20px;
+  }
 `;

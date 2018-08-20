@@ -1,40 +1,49 @@
+import { Switch } from 'antd';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import 'antd/dist/antd.css';
+
+import { Header, Settings, Wrapper } from './components';
+import { helpers, Info, storage, Types } from 'utils';
 
 class Popup extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      color: '#fff'
+      active: false,
+      loading: true
     };
 
-    // Get current color from chrome storage
-    chrome.storage.sync.get('color', data => {
-      this.setState({ color: data.color });
+    helpers.getCurrentType(type => {
+      this.type = type;
+      storage.get(type, data => {
+        // We wait on mount here for synchronous storage retrieval methods (i.e. local storage)
+        setTimeout(() => {
+          this.setState({ active: data[type] });
+        });
+      });
     });
   }
 
-  changeColor = () => {
-    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-      chrome.tabs.executeScript(tabs[0].id, {
-        code: `document.body.style.backgroundColor = "${this.state.color}";`
-      });
+  toggleStatus = () => {
+    storage.set({ [this.type]: !this.state.active }, () => {
+      this.setState({ active: !this.state.active });
     });
   };
 
   render() {
     return (
-      <div>
-        <button
-          onClick={this.changeColor}
-          style={{
-            backgroundColor: this.state.color,
-            height: '30px',
-            outline: 'none',
-            width: '30px'
-          }}
-        />
-      </div>
+      <Wrapper>
+        <Header>
+          <h1>Unbias Machine</h1>
+        </Header>
+        <Settings>
+          <div>
+            <Switch checked={this.state.active} onChange={this.toggleStatus} />
+            <label>Active</label>
+          </div>
+        </Settings>
+      </Wrapper>
     );
   }
 }
