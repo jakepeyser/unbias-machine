@@ -3,8 +3,9 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import 'antd/dist/antd.css';
 
-import { Header, Settings, Wrapper } from './components';
-import { helpers, Info, storage, Types } from 'utils';
+import { Border, Container, Header, Settings, Site, Wrapper } from './components';
+import Logo from 'assets/logo.svg';
+import { helpers, Info, storage } from 'utils';
 
 class Popup extends Component {
   constructor(props) {
@@ -15,11 +16,10 @@ class Popup extends Component {
     };
 
     helpers.getCurrentType(type => {
-      this.type = type;
       storage.get(type, data => {
         // We wait on mount here for synchronous storage retrieval methods (i.e. local storage)
         setTimeout(() => {
-          this.setState({ active: data[type] });
+          this.setState({ active: data[type], type });
         });
       });
     });
@@ -32,17 +32,29 @@ class Popup extends Component {
   };
 
   render() {
+    const info = Info[this.state.type];
     return (
       <Wrapper>
         <Header>
+          <Logo height={28} width={28} />
           <h1>Unbias Machine</h1>
         </Header>
-        <Settings>
-          <div>
-            <Switch checked={this.state.active} onChange={this.toggleStatus} />
-            <label>Active</label>
-          </div>
-        </Settings>
+        <Container>
+          {this.state.type && (
+            <Site>
+              <img src={info.favicon} />
+              <h2>{info.label}</h2>
+            </Site>
+          )}
+          <Border>
+            <Settings>
+              <div>
+                <Switch checked={this.state.active} onChange={this.toggleStatus} />
+                <label>Active</label>
+              </div>
+            </Settings>
+          </Border>
+        </Container>
       </Wrapper>
     );
   }

@@ -43,9 +43,13 @@ export const Option = styled.div`
   align-items: center;
   display: flex;
   flex-direction: row;
-  > span {
+  > label {
     font-size: 14px;
-    margin-left: 10px;
+  }
+  > img {
+    height: 18px;
+    margin: 0 10px;
+    width: 18px;
   }
   + div {
     margin-top: 20px;

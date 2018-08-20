@@ -8,6 +8,7 @@ const merge = require('webpack-merge');
 
 // Init common paths used for configuration
 const PATHS = {
+  assets: path.join(__dirname, '/src/assets'),
   background_page: path.join(__dirname, '/src/background/'),
   dist: path.join(__dirname, '/dist'),
   images: path.join(__dirname, '/src/assets/images'),
@@ -46,6 +47,24 @@ const common = {
       {
         test: /\.css$/,
         use: ['style-loader', 'css-loader']
+      },
+      {
+        test: /\.png$/,
+        use: 'file-loader'
+      },
+      {
+        test: /\.svg$/,
+        use: [
+          {
+            loader: 'babel-loader'
+          },
+          {
+            loader: 'react-svg-loader',
+            options: {
+              jsx: true // true outputs JSX tags
+            }
+          }
+        ]
       }
     ]
   },
@@ -56,6 +75,7 @@ const common = {
   resolve: {
     modules: ['node_modules'],
     alias: {
+      assets: PATHS.assets,
       utils: PATHS.utils
     }
   }
@@ -116,7 +136,7 @@ switch (process.env.npm_lifecycle_event) {
         new HtmlWebpackPlugin({
           filename: 'index.html',
           template: PATHS.index_html,
-          title: 'Unbias Machine Options'
+          title: 'Unbias Machine'
         }),
         new webpack.HotModuleReplacementPlugin(),
         new webpack.NoEmitOnErrorsPlugin()

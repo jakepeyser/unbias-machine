@@ -19,17 +19,53 @@ export const Header = styled.div`
   height: 40px;
   padding: 0 20px;
   width: 100%;
-  h1 {
+  > svg path {
+    fill: #fff;
+  }
+  > h1 {
     color: #fff;
     font-size: 16px;
+    font-weight: 300;
+    margin-left: 10px;
   }
+`;
+
+export const Site = styled.div`
+  align-items: center;
+  background-color: #fff;
+  display: flex;
+  flex-direction: row;
+  > img {
+    height: 20px;
+    width: 20px;
+  }
+  > h2 {
+    font-size: 14px;
+    font-weight: 400;
+    margin-left: 5px;
+  }
+`;
+
+export const Container = styled.div`
+  position: relative;
+  ${Site} {
+    left: 28px;
+    padding: 0 5px;
+    position: absolute;
+    top: 8px;
+  }
+`;
+
+export const Border = styled.div`
+  border: 1px solid #ebedf0;
+  margin: 20px;
 `;
 
 export const Settings = styled.div`
   align-items: flex-start;
   display: flex;
   flex-direction: column;
-  padding: 20px 30px;
+  padding: 20px;
   > div {
     align-items: center;
     display: flex;

@@ -46,7 +46,8 @@ class Options extends Component {
               return (
                 <Option key={type}>
                   <Switch checked={this.state[type]} onChange={() => this.setOption(type)} />
-                  <span>{info.label}</span>
+                  <img src={info.favicon} />
+                  <label>{info.label}</label>
                 </Option>
               );
             })}
