@@ -36,8 +36,8 @@ export const Site = styled.div`
   display: flex;
   flex-direction: row;
   > img {
-    height: 20px;
-    width: 20px;
+    height: 18px;
+    width: 18px;
   }
   > h2 {
     font-size: 14px;
